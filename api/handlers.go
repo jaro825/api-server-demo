@@ -43,7 +43,7 @@ func (u *UserAPI) UserCtx(next http.Handler) http.Handler {
 		var cachedUser types.User
 		err = u.cache.Get(ctx, id.String(), &cachedUser)
 		if err == nil {
-			u.logger.Debug().Msgf("user with id %s found in cache", id.String())
+			u.logger.Debug().Msgf("UserAPI.UserCTX user found in cache: %+v", cachedUser)
 			ctx = context.WithValue(ctx, contextKeyUser, &cachedUser)
 			next.ServeHTTP(w, r.WithContext(ctx))
 
@@ -72,7 +72,7 @@ const (
 func (u *UserAPI) GetUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, ok := ctx.Value("user").(*types.User)
+	user, ok := ctx.Value(contextKeyUser).(*types.User)
 	if !ok {
 		WriteJSON(w, http.StatusNotFound, Error{Error: ErrUserNotFound.Error()})
 
@@ -98,7 +98,9 @@ func (u *UserAPI) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	err = u.cache.Set(ctx, user.ID.String(), &user)
 	if err != nil {
-		u.logger.Warn().Msgf("could not save user in cache: %v", err)
+		u.logger.Warn().Msgf("UserAPI.CreateUser could not save user in cache: %v", err)
+	} else {
+		u.logger.Debug().Msgf("UserAPI.CreateUser saved user in cache: %+v", user)
 	}
 
 	err = u.store.CreateUser(ctx, &user)
@@ -112,11 +114,11 @@ func (u *UserAPI) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserAPI) UpdateUser(_ http.ResponseWriter, _ *http.Request) {
-	panic("UpdateUser not implemented") // todo implement
+	panic("UserAPI.UpdateUser not implemented") // todo implement
 }
 
 func (u *UserAPI) DeleteUser(_ http.ResponseWriter, _ *http.Request) {
-	panic("DeleteUser not implemented") // todo implement
+	panic("UserAPI.DeleteUser not implemented") // todo implement
 }
 
 func WriteJSON(w http.ResponseWriter, status int, v any) {

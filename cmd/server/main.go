@@ -13,21 +13,21 @@ import (
 )
 
 var (
-	configPath = pflag.String("config", "config.yaml", "configuration file")
+	configPath = pflag.String("config", "./cmd/server/", "path to configuration .env file")
 	debugMode  = pflag.Bool("debug", false, "debug mode")
 )
 
 func main() {
 	pflag.Parse()
 
-	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr})
-
+	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	if *debugMode {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		logger = logger.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 
 	config, err := LoadConfig(*configPath)

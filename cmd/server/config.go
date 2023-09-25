@@ -77,7 +77,9 @@ func LoadConfig(path string) (Config, error) { //nolint: cyclop
 
 	var config Config
 
-	err := v.Unmarshal(&config)
+	if err := v.Unmarshal(&config); err != nil {
+		return config, fmt.Errorf("config unmarshal error: %w", err)
+	}
 
-	return config, fmt.Errorf("config unmarshal error: %w", err)
+	return config, nil
 }

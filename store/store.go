@@ -88,5 +88,7 @@ func (s *PostgresStore) CreateUser(ctx context.Context, user *types.User) error 
 		return ErrCouldNotCreateUser
 	}
 
+	s.logger.Debug().Msgf("PostgresStore.CreateUser: %+v", user)
+
 	return nil
 }
