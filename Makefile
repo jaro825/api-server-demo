@@ -7,10 +7,10 @@ mocks:
 
 clean:
 	go clean
-	rm -f ./cmd/proxy/${BINARY_NAME}
+	rm -f ./cmd/server/${BINARY_NAME}
 
 build:
-	go build -o ./cmd/proxy/${BINARY_NAME} ./cmd/proxy/*.go
+	go build -o ./cmd/server/${BINARY_NAME} ./cmd/server/*.go
 
 test:
 	go test -v ./...
@@ -19,7 +19,7 @@ test-integration:
 	go test -v ./... --tags=integration
 
 run: build
-	./cmd/proxy/${BINARY_NAME}
+	./cmd/server/${BINARY_NAME} --debug
 
 lint:
 	golangci-lint run

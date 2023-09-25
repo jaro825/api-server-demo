@@ -41,3 +41,15 @@ To run the application with all dependencies run this command:
 - [Openapi schema](docs/openapi.yaml)
 - [Postman collection](docs/UserAPI.postman_collection.json)
  
+### example output
+```shell
+./cmd/server/api-server --debug
+12:21AM INF api server created
+12:22AM WRN request completed bytes=19 ip=127.0.0.1:64453 latency=0.186542 method=POST path=/api/v1/users query= status=404
+12:22AM DBG UserAPI.CreateUser saved user in cache: {ID:89757d09-bf3a-4718-b8bf-4ffc2b3d527e Name:jaro}
+12:22AM DBG PostgresStore.CreateUser: &{ID:89757d09-bf3a-4718-b8bf-4ffc2b3d527e Name:jaro}
+12:22AM INF request completed bytes=60 ip=127.0.0.1:64453 latency=152.815708 method=POST path=/api/v1/user query= status=201
+12:22AM DBG UserAPI.GetUser user found in cache: {ID:89757d09-bf3a-4718-b8bf-4ffc2b3d527e Name:jaro}
+12:22AM INF request completed bytes=60 ip=127.0.0.1:64453 latency=5.832125 method=GET path=/api/v1/user/89757d09-bf3a-4718-b8bf-4ffc2b3d527e query= status=200
+12:22AM WRN request completed bytes=40 ip=127.0.0.1:64453 latency=0.075667 method=GET path=/api/v1/user/xyz query= status=400
+```
