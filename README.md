@@ -4,6 +4,13 @@ The functionality currently supported includes:
 - adding user
 - getting user
 
+Users are stored in relational database.
+
+The application also uses cache to store users until TTL expires.
+
+When querying for user application first searches its cache
+and only if user is not found it queries a database.
+
 ### API endpoints
 - ```GET /api/v1/user```
 - ```POST /api/v1/user```

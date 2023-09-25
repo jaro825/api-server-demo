@@ -98,7 +98,6 @@ func userRouter(api *api.UserAPI) chi.Router { //nolint: ireturn
 	r.Post("/", api.CreateUser) // POST /api/v1/user
 
 	r.Route("/{id}", func(r chi.Router) {
-		r.Use(api.UserCtx)
 		r.Get("/", api.GetUser)       // GET /api/v1//user/c444f05f-67d6-491a-93be-f2ec09503b71
 		r.Put("/", api.UpdateUser)    // PUT /api/v1/user/c444f05f-67d6-491a-93be-f2ec09503b71
 		r.Delete("/", api.DeleteUser) // DELETE /api/v1/user/c444f05f-67d6-491a-93be-f2ec09503b71

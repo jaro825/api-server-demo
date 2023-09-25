@@ -1,6 +1,9 @@
-.PHONY: clean build test run all lint
+.PHONY: clean build test run all lint mocks
 
 BINARY_NAME=api-server
+
+mocks:
+	mockery --config .mockery.yaml
 
 clean:
 	go clean

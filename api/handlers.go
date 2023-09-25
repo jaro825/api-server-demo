@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/jaro825/api-server-demo/cache"
@@ -12,8 +11,6 @@ import (
 	"github.com/rs/zerolog"
 	"net/http"
 )
-
-var ErrUserNotFound = errors.New("user not found")
 
 type UserAPI struct {
 	store  store.Store
@@ -25,44 +22,6 @@ func NewUserAPI(l zerolog.Logger, s store.Store, c cache.Cache) *UserAPI {
 	return &UserAPI{s, c, l}
 }
 
-func (u *UserAPI) UserCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID := chi.URLParam(r, "id")
-
-		// check if id is a valid UUID
-		id, err := uuid.Parse(userID)
-		if err != nil {
-			WriteJSON(w, http.StatusBadRequest, Error{Error: "user ID is not a valid UUID"})
-
-			return
-		}
-
-		ctx := r.Context()
-
-		// check local cache
-		var cachedUser types.User
-		err = u.cache.Get(ctx, id.String(), &cachedUser)
-		if err == nil {
-			u.logger.Debug().Msgf("UserAPI.UserCTX user found in cache: %+v", cachedUser)
-			ctx = context.WithValue(ctx, contextKeyUser, &cachedUser)
-			next.ServeHTTP(w, r.WithContext(ctx))
-
-			return
-		}
-
-		// query db
-		user, err := u.store.GetUser(ctx, id.String())
-		if err != nil {
-			WriteJSON(w, http.StatusNotFound, Error{Error: err.Error()})
-
-			return
-		}
-
-		ctx = context.WithValue(ctx, contextKeyUser, user)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
 type key int
 
 const (
@@ -70,12 +29,31 @@ const (
 )
 
 func (u *UserAPI) GetUser(w http.ResponseWriter, r *http.Request) {
+	userID := chi.URLParam(r, "id")
+
+	// check if id is a valid UUID
+	id, err := uuid.Parse(userID)
+	if err != nil {
+		WriteJSON(w, http.StatusBadRequest, Error{Error: "user ID is not a valid UUID"})
+		return
+	}
+
 	ctx := r.Context()
 
-	user, ok := ctx.Value(contextKeyUser).(*types.User)
-	if !ok {
-		WriteJSON(w, http.StatusNotFound, Error{Error: ErrUserNotFound.Error()})
+	// check local cache
+	var cachedUser types.User
+	err = u.cache.Get(ctx, id.String(), &cachedUser)
+	if err == nil {
+		u.logger.Debug().Msgf("UserAPI.GetUser user found in cache: %+v", cachedUser)
+		ctx = context.WithValue(ctx, contextKeyUser, &cachedUser)
+		WriteJSON(w, http.StatusOK, cachedUser)
+		return
+	}
 
+	// query db
+	user, err := u.store.GetUser(ctx, id.String())
+	if err != nil {
+		WriteJSON(w, http.StatusNotFound, Error{Error: err.Error()})
 		return
 	}
 
@@ -88,7 +66,11 @@ func (u *UserAPI) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		WriteJSON(w, http.StatusBadRequest, Error{Error: "could not decode request payload into a user"})
+		return
+	}
 
+	if user.Name == "" {
+		WriteJSON(w, http.StatusBadRequest, Error{Error: "user name cannot be empty"})
 		return
 	}
 
@@ -106,7 +88,6 @@ func (u *UserAPI) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err = u.store.CreateUser(ctx, &user)
 	if err != nil {
 		WriteJSON(w, http.StatusInternalServerError, Error{Error: err.Error()})
-
 		return
 	}
 
