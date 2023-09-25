@@ -32,7 +32,7 @@ func (u *UserAPI) UserCtx(next http.Handler) http.Handler {
 		// check if id is a valid UUID
 		id, err := uuid.Parse(userID)
 		if err != nil {
-			WriteJSON(w, http.StatusUnprocessableEntity, Error{Error: "cachedUser ID is not a valid UUID"})
+			WriteJSON(w, http.StatusBadRequest, Error{Error: "user ID is not a valid UUID"})
 
 			return
 		}
