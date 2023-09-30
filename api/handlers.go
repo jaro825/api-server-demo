@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/jaro825/api-server-demo/cache"
-	"github.com/jaro825/api-server-demo/store"
-	"github.com/jaro825/api-server-demo/types"
+	"github.com/jdiuwe/api-server-demo/cache"
+	"github.com/jdiuwe/api-server-demo/store"
+	"github.com/jdiuwe/api-server-demo/types"
 	"github.com/rs/zerolog"
 	"net/http"
 )

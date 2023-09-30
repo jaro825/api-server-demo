@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/jaro825/api-server-demo/cache"
-	"github.com/jaro825/api-server-demo/server"
-	"github.com/jaro825/api-server-demo/store"
+	"github.com/jdiuwe/api-server-demo/cache"
+	"github.com/jdiuwe/api-server-demo/server"
+	"github.com/jdiuwe/api-server-demo/store"
 	"github.com/rs/zerolog"
 	"github.com/spf13/pflag"
 	"os"

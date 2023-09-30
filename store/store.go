@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/jaro825/api-server-demo/types"
+	"github.com/jdiuwe/api-server-demo/types"
 	_ "github.com/lib/pq" //nolint: revive
 	"github.com/rs/zerolog"
 )
